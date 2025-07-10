@@ -171,9 +171,6 @@ uint16_t a2i(const char *s, uint8_t *pos) {
  * Application entrypoint
  */
 int main(void) {
-  // Perform platform specific initialization
-  platform_init();
-
   // Create ring buffer for received UART data
   struct item buf[16];
   ring_init(&rx, buf, 16);
@@ -184,6 +181,9 @@ int main(void) {
 
   // Internal state
   struct platform_state state = {0};
+
+  // Perform platform specific initialization
+  platform_init();
 
   while (1) {
     // Update internal state
