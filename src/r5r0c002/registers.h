@@ -46,6 +46,8 @@
 #pragma ADDRESS vw2c_addr    0x0037    // Voltage monitor 2 circuit control register
 #pragma ADDRESS kupic_addr   0x004D    // Key input interrupt control register
 #pragma ADDRESS adic_addr    0x004E    // Comparator conversion interrupt control register
+#pragma ADDRESS ssuaic_addr  0x004F    // SSU interrupt control register
+#pragma ADDRESS iic2aic_addr 0x004F    // IIC interrupt control register
 #pragma ADDRESS cmp1ic_addr  0x0050    // Compare 1 interrupt control register
 #pragma ADDRESS s0tic_addr   0x0051    // UART0 transmit interrupt control register
 #pragma ADDRESS s0ric_addr   0x0052    // UART0 receive interrupt control register
@@ -90,6 +92,22 @@
 #pragma ADDRESS u1c1_addr    0x00AD    // UART1 transmit/receive control register1
 #pragma ADDRESS u1rb_addr    0x00AE    // UART1 receive buffer register
 #pragma ADDRESS ucon_addr    0x00B0    // UART transmit/receive control register2
+#pragma ADDRESS sscrh_addr   0x00B8    // SS control register H
+#pragma ADDRESS sscrl_addr   0x00B9    // SS control register L
+#pragma ADDRESS ssmr_addr    0x00BA    // SS mode reigister
+#pragma ADDRESS sser_addr    0x00BB    // SS enable register
+#pragma ADDRESS sssr_addr    0x00BC    // SS status register
+#pragma ADDRESS ssmr2_addr   0x00BD    // SS mode register 2
+#pragma ADDRESS sstdr_addr   0x00BE    // SS transmit data register
+#pragma ADDRESS ssrdr_addr   0x00BF    // SS receive data register
+#pragma ADDRESS iccr1_addr   0x00B8    // IIC bus control register 1
+#pragma ADDRESS iccr2_addr   0x00B9    // IIC bus control register 2
+#pragma ADDRESS icmr_addr    0x00BA    // IIC bus mode register
+#pragma ADDRESS icier_addr   0x00BB    // IIC bus interrupt enable register
+#pragma ADDRESS icsr_addr    0x00BC    // IIC bus status register
+#pragma ADDRESS sar_addr     0x00BD    // Slave ddress register
+#pragma ADDRESS icdrt_addr   0x00BE    // IIC bus transmit data register
+#pragma ADDRESS icdrr_addr   0x00BF    // IIC bus receive data register
 #pragma ADDRESS ad_addr      0x00C0    // A-D register
 #pragma ADDRESS adcon2_addr  0x00D4    // A-D control register2
 #pragma ADDRESS adcon0_addr  0x00D6    // A-D control register0
@@ -100,6 +118,7 @@
 #pragma ADDRESS pd3_addr     0x00E7    // Port P3 direction register
 #pragma ADDRESS p4_addr      0x00E8    // Port P4 register
 #pragma ADDRESS pd4_addr     0x00EA    // Port P4 direction register
+#pragma ADDRESS pmr_addr     0x00F8    // Port mode register
 #pragma ADDRESS pur0_addr    0x00FC    // Pull-up control register0
 #pragma ADDRESS pur1_addr    0x00FD    // Pull-up control register1
 #pragma ADDRESS drr_addr     0x00FE    // Port P1 drivability control register
@@ -470,12 +489,197 @@ union byte_def ucon_addr;
 #define    cntrsel       ucon_addr.bit.b7      /* Cntr0 signal pin select bit */
 
 /*------------------------------------------------------
+  SS control register H
+------------------------------------------------------*/
+union byte_def sscrh_addr;
+#define    sscrh         sscrh_addr.byte
+
+#define    cks0_sscrh    sscrh_addr.bit.b0     /* Transfer clock rate select bit */
+#define    cks1_sscrh    sscrh_addr.bit.b1     /* Transfer clock rate select bit */
+#define    cks2_sscrh    sscrh_addr.bit.b2     /* Transfer clock rate select bit */
+#define    mss_sscrh     sscrh_addr.bit.b5     /* Master/Slave device select bit */
+#define    rsstp_sscrh   sscrh_addr.bit.b6     /* Receive single stop bit */
+
+/*------------------------------------------------------
+  SS control register L
+------------------------------------------------------*/
+union byte_def sscrl_addr;
+#define    sscrl         sscrl_addr.byte
+
+#define    sres_sscrl    sscrl_addr.bit.b1     /* SSUA control part reset bit */
+#define    solp_sscrl    sscrl_addr.bit.b4     /* SOL write protect bit */
+#define    sol_sscrl     sscrl_addr.bit.b5     /* Serial data output value setting bit */
+
+/*------------------------------------------------------
+  SS mode register
+------------------------------------------------------*/
+union byte_def ssmr_addr;
+#define    ssmr          ssmr_addr.byte
+
+#define    bc0_ssmr      ssmr_addr.bit.b0      /* Bit counter 2 to 0*/
+#define    bc1_ssmr      ssmr_addr.bit.b1      /* Bit counter 2 to 0*/
+#define    bc2_ssmr      ssmr_addr.bit.b2      /* Bit counter 2 to 0*/
+#define    cphs_ssmr     ssmr_addr.bit.b5      /* SSCK clock phase select bit */
+#define    cpos_ssmr     ssmr_addr.bit.b6      /* SSCK clock polarity select bit */
+#define    mls_ssmr      ssmr_addr.bit.b7      /* MSB first/ LSB first select bit */
+
+/*------------------------------------------------------
+  SS enable register
+------------------------------------------------------*/
+union byte_def sser_addr;
+#define    sser          sser_addr.byte
+
+#define    ceie_sser     sser_addr.bit.b0      /* Conflict error interrupt enable bit */
+#define    re_sser       sser_addr.bit.b3      /* Receive enable bit */
+#define    te_sser       sser_addr.bit.b4      /* Transmit enable bit */
+#define    rie_sser      sser_addr.bit.b5      /* Receive interrupt enable bit */
+#define    teie_sser     sser_addr.bit.b6      /* Transmit end interrupt enable bit */
+#define    tie_sser      sser_addr.bit.b7      /* Transmit interrupt enable bit */
+
+/*------------------------------------------------------
+  SS status register
+------------------------------------------------------*/
+union byte_def sssr_addr;
+#define    sssr          sssr_addr.byte
+
+#define    ce_sssr       sssr_addr.bit.b0      /* Conflict error flag */
+#define    orer_sssr     sssr_addr.bit.b2      /* Overrun error flag */
+#define    rdrf_sssr     sssr_addr.bit.b5      /* Receive data register ful */
+#define    tend_sssr     sssr_addr.bit.b6      /* Transmit end */
+#define    tdre_sssr     sssr_addr.bit.b7      /* Transmit data empty */
+
+/*------------------------------------------------------
+  SS mode register 2
+------------------------------------------------------*/
+union byte_def ssmr2_addr;
+#define    ssmr2         ssmr2_addr.byte
+
+#define    ssums_ssmr2   ssmr2_addr.bit.b0     /* SSUA mode select bit */
+#define    csos_ssmr2    ssmr2_addr.bit.b1     /* SCS pin open drain output select bit */
+#define    soos_ssmr2    ssmr2_addr.bit.b2     /* SSO pin open drain output select bit */
+#define    sckos_ssmr2   ssmr2_addr.bit.b3     /* SSCK pin open drain output select bit */
+#define    css0_ssmr2    ssmr2_addr.bit.b4     /* SCS pin selsct bit */
+#define    css1_ssmr2    ssmr2_addr.bit.b5     /* SCS pin select bit */
+#define    scks_ssmr2    ssmr2_addr.bit.b6     /* SSCK pin select bit */
+#define    bide_ssmr2    ssmr2_addr.bit.b7     /* Bidirectional mode enable bit */
+
+/*------------------------------------------------------
+  SS transmit data register
+------------------------------------------------------*/
+union byte_def sstdr_addr;
+#define    sstdr         sstdr_addr.byte
+
+/*------------------------------------------------------
+  SS receive data register
+------------------------------------------------------*/
+union byte_def ssrdr_addr;
+#define    ssrdr         ssrdr_addr.byte
+
+/*------------------------------------------------------
+  IIC bus control register 1
+------------------------------------------------------*/
+union byte_def iccr1_addr;
+#define    iccr1         iccr1_addr.byte
+
+#define    cks0_iccr1    iccr1_addr.bit.b0     /* Transmit clock select bit 3 to 0 */
+#define    cks1_iccr1    iccr1_addr.bit.b1     /* Transmit clock select bit 3 to 0 */
+#define    cks2_iccr1    iccr1_addr.bit.b2     /* Transmit clock select bit 3 to 0 */
+#define    cks3_iccr1    iccr1_addr.bit.b3     /* Transmit clock select bit 3 to 0 */
+#define    trs_iccr1     iccr1_addr.bit.b4     /* Transfer/receive select bit */
+#define    mst_iccr1     iccr1_addr.bit.b5     /* Master/slave select bit */
+#define    rcvd_iccr1    iccr1_addr.bit.b6     /* Receive disable bit */
+#define    ice_iccr1     iccr1_addr.bit.b7     /* IIC bus interface 2A enable bit */
+
+/*------------------------------------------------------
+  IIC bus control register 2
+------------------------------------------------------*/
+union byte_def iccr2_addr;
+#define    iccr2         iccr2_addr.byte
+
+#define    iicrst_iccr2  iccr2_addr.bit.b1     /* IIC control part reset bit */
+#define    sclo_iccr2    iccr2_addr.bit.b3     /* SCL monitor flag */
+#define    sdaop_iccr2   iccr2_addr.bit.b4     /* SDAO write protect bit */
+#define    sdao_iccr2    iccr2_addr.bit.b5     /* SDA output value control bit */
+#define    scp_iccr2     iccr2_addr.bit.b6     /* Start/Stop condition generation disable bit */
+#define    bbsy_iccr2    iccr2_addr.bit.b7     /* Bus busy bit */
+
+/*------------------------------------------------------
+  IIC bus mode register
+------------------------------------------------------*/
+union byte_def icmr_addr;
+#define    icmr          icmr_addr.byte
+
+#define    bc0_icmr      icmr_addr.bit.b0      /* Bit counter 2 to 0 */
+#define    bc1_icmr      icmr_addr.bit.b1      /* Bit Counter 2 to 0 */
+#define    bc2_icmr      icmr_addr.bit.b2      /* Bit Counter 2 to 0 */
+#define    bcwp_icmr     icmr_addr.bit.b3      /* BC write protect bit */
+#define    wait_icmr     icmr_addr.bit.b6      /* Wait insertion bit */
+#define    mls_icmr      icmr_addr.bit.b7      /* MSB-First/LSB-First select */
+
+/*------------------------------------------------------
+  IIC bus interrupt enable register
+------------------------------------------------------*/
+union byte_def icier_addr;
+#define    icier         icier_addr.byte
+
+#define    ackbt_icier   icier_addr.bit.b0     /* Transmit acknow ledge select bit */
+#define    ackbr_icier   icier_addr.bit.b1     /* Receive acknow ledge bit */
+#define    acke_icier    icier_addr.bit.b2     /* Acknow ledge bit Judgement Select Bit */
+#define    stie_icier    icier_addr.bit.b3     /* Stop condition detection interrupt enable bit */
+#define    nakie_icier   icier_addr.bit.b4     /* NACK receive interrupt enable bit */
+#define    rie_icier     icier_addr.bit.b5     /* Receive interrupt enable bit */
+#define    teie_icier    icier_addr.bit.b6     /* Transmit end interrupt enable bit */
+#define    tie_icier     icier_addr.bit.b7     /* Transmit interrupt enable bit */
+
+/*------------------------------------------------------
+  IIC bus status register
+------------------------------------------------------*/
+union byte_def icsr_addr;
+#define    icsr          icsr_addr.byte
+
+#define    adz_icsr      icsr_addr.bit.b0      /* General call address recognition flag */
+#define    aas_icsr      icsr_addr.bit.b1      /* Slave address recognition flag */
+#define    al_icsr       icsr_addr.bit.b2      /* Arbitration lost flag */
+#define    stop_icsr     icsr_addr.bit.b3      /* Stop condition detection flag */
+#define    nackf_icsr    icsr_addr.bit.b4      /* No acknow ledge detection flag */
+#define    rdrf_icsr     icsr_addr.bit.b5      /* Receive data register full */
+#define    tend_icsr     icsr_addr.bit.b6      /* Transmit end */
+#define    tdre_icsr     icsr_addr.bit.b7      /* Transmit data empty */
+
+/*------------------------------------------------------
+  Slave address register
+------------------------------------------------------*/
+union byte_def sar_addr;
+#define    sar           sar_addr.byte
+
+#define    fs_sar        sar_addr.bit.b0       /* Format select bit */
+#define    sva0_sar      sar_addr.bit.b1       /* Slave address 6 to 0 */
+#define    sva1_sar      sar_addr.bit.b2       /* Slave address 6 to 0 */
+#define    sva2_sar      sar_addr.bit.b3       /* Slave address 6 to 0 */
+#define    sva3_sar      sar_addr.bit.b4       /* Slave address 6 to 0 */
+#define    sva4_sar      sar_addr.bit.b5       /* Slave address 6 to 0 */
+#define    sva5_sar      sar_addr.bit.b6       /* Slave address 6 to 0 */
+#define    sva6_sar      sar_addr.bit.b7       /* Slave address 6 to 0 */
+
+/*------------------------------------------------------
+  IIC bus transmit data register
+------------------------------------------------------*/
+union byte_def icdrt_addr;
+#define    icdrt         icdrt_addr.byte
+
+/*------------------------------------------------------
+  IIC bus receive data register
+------------------------------------------------------*/
+union byte_def icdrr_addr;
+#define    icdrr         icdrr_addr.byte
+
+/*------------------------------------------------------
   A-D control register2
 ------------------------------------------------------*/
 union byte_def adcon2_addr;
 #define    adcon2        adcon2_addr.byte
 
-#define    cmpsel        adcon2_addr.bit.b1    /* Comparator function selection bit */
+#define    smp           adcon2_addr.bit.b0    /* A-D conversion method select bit */
 
 /*------------------------------------------------------
   A-D control register0
@@ -486,10 +690,10 @@ union byte_def adcon0_addr;
 #define    ch0           adcon0_addr.bit.b0    /* Analog input pin select bit */
 #define    ch1           adcon0_addr.bit.b1    /* Analog input pin select bit */
 #define    ch2           adcon0_addr.bit.b2    /* Analog input pin select bit */
-#define    md            adcon0_addr.bit.b3    /* Comparator conversion operating mode select bit */
+#define    md            adcon0_addr.bit.b3    /* A-D operation mode select bit */
 #define    adgsel0       adcon0_addr.bit.b4    /* A-D input group select bit */
-#define    adcap         adcon0_addr.bit.b5    /* Comparator conversion automatic start bit */
-#define    adst          adcon0_addr.bit.b6    /* Comparator conversion start flag */
+#define    adcap         adcon0_addr.bit.b5    /* A-D conversion automatic start bit */
+#define    adst          adcon0_addr.bit.b6    /* A-D conversion start flag */
 #define    cks0          adcon0_addr.bit.b7    /* Frequency select bit0 */
 #define    cks0_adcon0   cks0
 
@@ -499,8 +703,10 @@ union byte_def adcon0_addr;
 union byte_def adcon1_addr;
 #define    adcon1        adcon1_addr.byte
 
+#define    bits          adcon1_addr.bit.b3    /* 8/10-bit mode select bit */
 #define    cks1          adcon1_addr.bit.b4    /* Frequency select bit1 */
 #define    cks1_adcon1   cks1
+#define    vcut          adcon1_addr.bit.b5    /* Vref connect bit */
 
 /*------------------------------------------------------
   Port P1 register
@@ -572,6 +778,15 @@ union byte_def pd4_addr;
 #define    pd4           pd4_addr.byte
 
 #define    pd4_5         pd4_addr.bit.b5       /* Port P45 direction bit */
+
+/*------------------------------------------------------
+  Port mode register
+------------------------------------------------------*/
+union byte_def pmr_addr;
+#define    pmr           pmr_addr.byte
+
+#define    ssisel        pmr_addr.bit.b3       /* SSI Signal Pin Select bit */
+#define    iicsel        pmr_addr.bit.b7       /* SSU / I2C bus Switch bit */
 
 /*------------------------------------------------------
   Pull-up control register0
@@ -670,8 +885,8 @@ union{
     unsigned char  b7:1;
   }bit;
   unsigned char  byte;
-} kupic_addr, adic_addr, cmp1ic_addr, s0tic_addr, s0ric_addr, s1tic_addr, s1ric_addr, txic_addr,
-  tzic_addr, int1ic_addr, int3ic_addr, tcic_addr, cmp0ic_addr, int0ic_addr;
+} kupic_addr, adic_addr, ssuaic_addr, iic2aic_addr, cmp1ic_addr, s0tic_addr, s0ric_addr,
+  s1tic_addr, s1ric_addr, txic_addr, tzic_addr, int1ic_addr, int3ic_addr, tcic_addr, cmp0ic_addr, int0ic_addr;
 
 /*------------------------------------------------------
   Key input interrupt control register
@@ -684,7 +899,7 @@ union{
 #define     ir_kupic      kupic_addr.bit.ir
 
 /*------------------------------------------------------
-  Comparator conversion interrupt control register
+  A-D interrupt control register
 ------------------------------------------------------*/
 #define     adic          adic_addr.byte
 
@@ -692,6 +907,26 @@ union{
 #define     ilvl1_adic    adic_addr.bit.ilvl1
 #define     ilvl2_adic    adic_addr.bit.ilvl2
 #define     ir_adic       adic_addr.bit.ir
+
+/*------------------------------------------------------
+  SSU interrupt control register
+------------------------------------------------------*/
+#define     ssuaic        ssuaic_addr.byte
+
+#define     ilvl0_ssuaic  ssuaic_addr.bit.ilvl0
+#define     ilvl1_ssuaic  ssuaic_addr.bit.ilvl1
+#define     ilvl2_ssuaic  ssuaic_addr.bit.ilvl2
+#define     ir_ssuaic     ssuaic_addr.bit.ir
+
+/*------------------------------------------------------
+  IIC interrupt control register
+------------------------------------------------------*/
+#define     iic2aic       iic2aic_addr.byte
+
+#define     ilvl0_iic2aic iic2aic_addr.bit.ilvl0
+#define     ilvl1_iic2aic iic2aic_addr.bit.ilvl1
+#define     ilvl2_iic2aic iic2aic_addr.bit.ilvl2
+#define     ir_iic2aic    iic2aic_addr.bit.ir
 
 /*------------------------------------------------------
   Compare 1 interrupt control register
@@ -1076,6 +1311,7 @@ union{
 #define    u1tbh         u1tb_addr.byte.high   /* UART1 transmit buffer register High */
 #define    ad            ad_addr.word          /* A-D register  */
 #define    adl           ad_addr.byte.low      /* A-D register Low */
+#define    adh           ad_addr.byte.high     /* A-D register High */
 
 #endif
 
