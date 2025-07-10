@@ -2,7 +2,7 @@
 
 [![Build sa8x8-fw](https://github.com/OpenRTX/sa8x8-fw/actions/workflows/main.yaml/badge.svg)](https://github.com/OpenRTX/sa8x8-fw/actions/workflows/main.yaml)
 
-This repository contains a replacement firmware application for the NiceRF SA8x8 family of radio modules.
+This repository contains a replacement firmware application for the NiceRF SA8x8(S) family of radio modules.
 
 In contrast to the official factory firmware, two special commands (PEEK and POKE) enable direct register level control to a module's internal AT1846S transceiver. Configuration of modules through this low level interface facilitates the use of advanced digital modes that are otherwise inaccessible. Refer to the included Python API example for a basic demonstration of using the firmware to transmit an [M17](https://m17project.org) baseband.
 
@@ -55,7 +55,7 @@ Refer to the module [schematics](https://github.com/OpenRTX/sa8x8-fw/files/12232
 
 ## Firmware Flashing
 
-The [rl78flash](https://github.com/msalau/rl78flash) tool by Maksim Salau enables flashing SA8x8 modules through the RL78 serial bootloader. The physical [programming interface](https://github.com/msalau/rl78flash/blob/master/hw/rl78s-hw.png) (mode 1 or mode 3) requires a 115200 baud UART operating at 3.3V and two switching diodes, such as 1N4148 or 1N5817. Schottky diodes are preferred in order to minimize voltage drop while operating at this logic level, but the exact part is not important. Be sure to specify the relevant mode while running `rl78flash`.
+The [rl78flash](https://github.com/msalau/rl78flash) tool by Maksim Salau enables flashing SA8x8S (v2.0) modules through the RL78 serial bootloader. The physical [programming interface](https://github.com/msalau/rl78flash/blob/master/hw/rl78s-hw.png) (mode 1 or mode 3) requires a 115200 baud UART operating at 3.3V and two switching diodes, such as 1N4148 or 1N5817. Schottky diodes are preferred in order to minimize voltage drop while operating at this logic level, but the exact part is not important. Be sure to specify the relevant mode while running `rl78flash`.
 
     $ rl78flash -m 3 -a -v /dev/ttyUSB0 sa8x8-fw-sa868s-uhf.s37
     rl78flash v0.7.0
