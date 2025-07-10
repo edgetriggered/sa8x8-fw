@@ -105,7 +105,7 @@ inline bool ring_full(struct ring *r) {
  */
 char up(char c) {
   if (c >= 'a' && c <= 'z') {
-    c -= 32;
+    c = (char)(c - 32);
   }
 
   return c;
