@@ -36,13 +36,13 @@ void delay(uint16_t n) {
  * Initialize UART0 for communication
  */
 void uart_init(void) {
-  pd1 &= 0xCF;  // UART0: Enable peripheral
+  pd1_5 = 0;    // UART0: Enable RXD0 input
   u0mr = 0x05;  // UART0: 8N1 framing
-  u0c0 = 0x02;  // UART0: f/32, TXD0, CMOS, LSB first
+  u0c0 = 0x01;  // UART0: f/8, TXD0, CMOS, LSB first
   u0c1 = 0x00;  // UART0: Transmit/receive disable
-  u0brg = 0x03; // UART0: 115200 Baud
-  s0tic = 0x00; // UART0: Transmit interrupt disable
-  s0ric = 0x01; // UART0: Receive interrupt enable
+  u0brg = 0x0b; // UART0: 9600 Baud
+  s0tic = 0x04; // UART0: Transmit interrupt enable
+  s0ric = 0x04; // UART0: Receive interrupt enable
   te_u0c1 = 1;  // UART0: Transmit enable
   re_u0c1 = 1;  // UART0: Receive enable
 }
@@ -54,9 +54,9 @@ int uart_puts(const char *s) {
   int len = 0;
 
   while ('\0' != *s) {
-    while (0U == ti_u0c1)
+    while (ti_u0c1 == 0)
       ;
-    u0tbl = (unsigned char)*s++;
+    u0tb = (unsigned int)*s++;
     ++len;
   }
 
@@ -169,7 +169,7 @@ static void _i2c_write(uint8_t val) {
       _i2c_sdio_low();
     }
 
-    val <<= 1;
+    val = (uint8_t)(val << 1);
     delay(1);
 
     _i2c_sclk_high();
@@ -206,7 +206,7 @@ static uint8_t _i2c_read(bool ack) {
     _i2c_sclk_high();
     delay(2);
 
-    val <<= 1;
+    val = (uint8_t)(val << 1);
     val |= _i2c_sdio_value();
 
     _i2c_sclk_low();
@@ -233,8 +233,6 @@ static uint8_t _i2c_read(bool ack) {
  * Initialize GPIO for bit-banged I2C bus transactions
  */
 void i2c_init(void) {
-
-
   _i2c_sdio_input();
 
   _i2c_sclk_output();
@@ -283,16 +281,15 @@ void platform_init(void) {
   cm17 = 1; // Enable f/4 mode
   cm16 = 0; // Enable f/4 mode
 
-  for (int i = 0; i <= 255; i++)
-    ; // Wait for clock switch
+  delay(8); // Wait for clock switch
 
   ocd2 = 0; // Use external reference as sysclock
   cm14 = 1; // Stop internal low speed reference
 
   prc0 = 0; // Protect on
 
-  uart_init();   // Setup UART0 for transmission and reception
-  i2c_init();    // Setup software I2C for bus transactions
+  uart_init(); // Setup UART0 for transmission and reception
+  i2c_init();  // Setup software I2C for bus transactions
 
   p3_4 = 0;  // P3_4 (H/L) is low
   pd3_4 = 1; // P3_4 (H/L) is output
@@ -371,10 +368,10 @@ bool platform_poke(uint8_t reg, uint16_t val) {
 void platform_amp(bool enabled) {
   if (enabled) {
     // Enable power amplifier
-    p3_4 = 0;   // P3_4 (H/L) is low
+    p3_4 = 0; // P3_4 (H/L) is low
   } else {
     // Disable power amplifier
-    p3_4 = 1;   // P3_4 (H/L) is high
+    p3_4 = 1; // P3_4 (H/L) is high
   }
 }
 
