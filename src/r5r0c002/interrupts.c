@@ -19,6 +19,8 @@
 #include "common.h"
 #include "registers.h"
 
+void dummy(void) {}
+
 void INT_BRK_I(void) {}
 void INT_KI(void) {}
 void INT_AD(void) {}
@@ -26,8 +28,9 @@ void INT_IIC(void) {}
 void INT_CMP1(void) {}
 void INT_ST0(void) {}
 void INT_SR0(void) {
-  ring_put(&rx, (char)u0rb);
-  ir_s0ric = 0U;
+  while (0 == ri_u0c1)
+    ;
+  ring_put(&rx, (char)(u0rb & 0xff));
 }
 void INT_ST1(void) {}
 void INT_SR1(void) {}

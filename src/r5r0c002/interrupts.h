@@ -36,6 +36,7 @@ void INT_CMP0(void) __attribute__((interrupt));
 void INT_INT0(void) __attribute__((interrupt));
 
 /* Hardware interrupts */
+void dummy(void) __attribute__((interrupt));
 void start(void) __attribute__((interrupt));
 
 #endif

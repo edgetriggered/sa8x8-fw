@@ -41,6 +41,7 @@ INPUT(-lm32cgloss)
 MEMORY {
 	RAM (w) : ORIGIN = 0x400, LENGTH = 1K
 	ROM (r) : ORIGIN = 0xc000, LENGTH = 16K
+	VVEC (r) : ORIGIN = 0xfedc, LENGTH = 256
 	VEC (r) : ORIGIN = 0xffdc, LENGTH = 36
 	/*
 	RESETVEC (r) : ORIGIN = 0xfffc, LENGTH = 4
@@ -133,8 +134,10 @@ SECTIONS
     SORT(CONSTRUCTORS)
     *(.data1)
     *(.got.plt) *(.got)
+    /*
     PROVIDE (__var_vect_start = .);
     *(.var_vects)
+    */
 
     . = ALIGN(2);
     _edata = .;
@@ -169,6 +172,9 @@ SECTIONS
     *(.stack)
   }
 
+  .var_vects : {
+    *(.var_vects)
+  } > VVEC
   .vec : {
     *(.vec)
   } > VEC
