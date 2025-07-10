@@ -52,29 +52,30 @@ OBJCOPY = $(PREFIX)objcopy
 OBJDUMP = $(PREFIX)objdump
 
 CFLAGS_RL78  = \
-	  -Isrc -Os --param=min-pagesize=0 -mcpu=g13 \
-	  -ffunction-sections \
-	  -fdata-sections \
-	  -fdiagnostics-parseable-fixits \
-	  -Wunused \
-	  -Wuninitialized \
-	  -Wall \
-	  -Wextra \
-	  -Wmissing-declarations \
-	  -Wconversion \
-	  -Wpointer-arith \
-	  -Wshadow \
-	  -Waggregate-return
+	-Isrc -Os --param=min-pagesize=0 -mcpu=g13 \
+	-ffunction-sections \
+	-fdata-sections \
+	-fdiagnostics-parseable-fixits \
+	-Wunused \
+	-Wuninitialized \
+	-Wall \
+	-Wextra \
+	-Wmissing-declarations \
+	-Wconversion \
+	-Wpointer-arith \
+	-Wshadow \
+	-Waggregate-return
 
 LDFLAGS_RL78 = \
-	  -nostartfiles \
-	  -Wl,-z,noexecstack \
-	  -Wl,-e_PowerOnReset \
-	  -Wl,--print-memory-usage \
-	  -Wl,--gc-sections \
-	  -Wl,--cref \
-	  -Wl,-Map,$(TARGET).map \
-	  -T ./src/r5f1026a/r5f1026a.ld
+	-g \
+	-nostartfiles \
+	-Wl,-z,noexecstack \
+	-Wl,-e_PowerOnReset \
+	-Wl,--print-memory-usage \
+	-Wl,--gc-sections \
+	-Wl,--cref \
+	-Wl,-Map,$(TARGET).map \
+	-T ./src/r5f1026a/r5f1026a.ld
 
 OBJECTS_RL78 = \
 	src/r5f1026a/start.o \
@@ -84,27 +85,28 @@ OBJECTS_RL78 = \
 	src/sa8x8.o
 
 CFLAGS_M16C  = \
-	  -Isrc -Os -mcpu=r8c \
-	  -ffunction-sections \
-	  -fdata-sections \
-	  -Wunused \
-	  -Wuninitialized \
-	  -Wall \
-	  -Wextra \
-	  -Wmissing-declarations \
-	  -Wconversion \
-	  -Wpointer-arith \
-	  -Wshadow \
-	  -Waggregate-return
+	-Isrc -Os -mcpu=r8c \
+	-ffunction-sections \
+	-fdata-sections \
+	-Wunused \
+	-Wuninitialized \
+	-Wall \
+	-Wextra \
+	-Wmissing-declarations \
+	-Wconversion \
+	-Wpointer-arith \
+	-Wshadow \
+	-Waggregate-return
 
 LDFLAGS_M16C = \
-	  -nostartfiles \
-	  -Wl,-z,noexecstack \
-	  -Wl,-e_start \
-	  -Wl,--print-memory-usage \
-	  -Wl,--cref \
-	  -Wl,-Map,$(TARGET).map \
-	  -T ./src/r5r0c002/r5r0c002.ld
+	-g \
+	-nostartfiles \
+	-Wl,-z,noexecstack \
+	-Wl,-e_start \
+	-Wl,--print-memory-usage \
+	-Wl,--cref \
+	-Wl,-Map,$(TARGET).map \
+	-T ./src/r5r0c002/r5r0c002.ld
 
 OBJECTS_M16C = \
 	src/r5r0c002/crt0.o \
@@ -159,8 +161,8 @@ $(TARGET).s28: $(TARGET).elf
 $(TARGET).s37: $(TARGET).elf
 	$(OBJCOPY) -O srec --srec-forceS3 --srec-len 32 $(TARGET).elf $(TARGET).s37
 
-$(TARGET).bin: $(TARGET).s37
-	$(OBJCOPY) -O binary -I srec --gap-fill 0xff --pad-to 0x4000 $(TARGET).s37 $(TARGET).bin
+$(TARGET).bin: $(TARGET).elf
+	$(OBJCOPY) -O binary --gap-fill 0xff --pad-to 0x4000 $(TARGET).elf $(TARGET).bin
 
 LOWER   = $(shell echo '$1' | tr '[:upper:]' '[:lower:]')
 
