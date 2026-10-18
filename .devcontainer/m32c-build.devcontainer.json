@@ -1,0 +1,15 @@
+{
+  "name": "m32c-elf toolchain",
+  "build": {
+    "dockerfile": "Containerfile",
+    "context": ".",
+    "args": {
+      "TARGET": "m32c-elf",
+      "BINUTILS_VER": "2.30",
+      "GCC_VER": "6.5.0",
+      "NEWLIB_VER": "3.0.0",
+      "GDB_VER": "8.0.1"
+    }
+  },
+  "remoteUser": "toolbox"
+}

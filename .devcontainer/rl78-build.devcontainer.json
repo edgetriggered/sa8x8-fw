@@ -1,0 +1,15 @@
+{
+  "name": "rl78-elf toolchain",
+  "build": {
+    "dockerfile": "Containerfile",
+    "context": ".",
+    "args": {
+      "TARGET": "rl78-elf",
+      "BINUTILS_VER": "2.40",
+      "GCC_VER": "13.1.0",
+      "NEWLIB_VER": "4.5.0.20241231",
+      "GDB_VER": "13.1"
+    }
+  },
+  "remoteUser": "toolbox"
+}
