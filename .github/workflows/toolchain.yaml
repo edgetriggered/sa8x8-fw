@@ -1,0 +1,81 @@
+name: Build toolchains
+
+on:
+  push:
+    paths:
+      - .devcontainer/**
+      - .github/workflows/toolchain.yaml
+  pull_request:
+    paths:
+      - .devcontainer/**
+  schedule:
+    - cron: '20 4 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  toolbox:
+    name: Generate container images
+
+    runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        include:
+          - image: m32c-build
+          - image: rl78-build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract build args from devcontainer config
+        id: args
+        run: |
+          {
+            echo "args<<EOF"
+            jq -r '.build.args | to_entries | map(.key + "=" + (.value | tostring)) | join("\n")' \
+              ".devcontainer/${{ matrix.image }}.devcontainer.json"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to ${{ env.REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/sa8x8-fw-${{ matrix.image }}
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=pr
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .devcontainer/Containerfile
+          build-args: ${{ steps.args.outputs.args }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,scope=${{ matrix.image }}
