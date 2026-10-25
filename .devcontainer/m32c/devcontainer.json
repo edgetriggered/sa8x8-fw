@@ -1,0 +1,6 @@
+{
+  "name": "m32c-elf toolchain (prebuilt)",
+  "image": "ghcr.io/openrtx/sa8x8-fw-m32c-build:latest",
+  "remoteUser": "toolbox"
+}
+

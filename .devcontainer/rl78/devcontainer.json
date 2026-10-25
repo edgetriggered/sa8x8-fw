@@ -1,0 +1,6 @@
+{
+  "name": "rl78-elf toolchain (prebuilt)",
+  "image": "ghcr.io/openrtx/sa8x8-fw-rl78-build:latest",
+  "remoteUser": "toolbox"
+}
+

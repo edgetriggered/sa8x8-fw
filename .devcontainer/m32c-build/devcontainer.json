@@ -1,5 +1,5 @@
 {
-  "name": "m32c-elf toolchain",
+  "name": "m32c-elf toolchain (source build)",
   "build": {
     "dockerfile": "Containerfile",
     "context": ".",

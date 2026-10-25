@@ -1,5 +1,5 @@
 {
-  "name": "rl78-elf toolchain",
+  "name": "rl78-elf toolchain (source build)",
   "build": {
     "dockerfile": "Containerfile",
     "context": ".",
