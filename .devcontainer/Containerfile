@@ -1,5 +1,5 @@
 # Stage 0: Base image pinned by digest for repeatable builds
-FROM alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395 AS base
+FROM docker.io/library/alpine@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a AS base
 
 # Stage 1: Build toolchain with development dependencies
 FROM base AS build
